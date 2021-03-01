@@ -17,6 +17,7 @@ type TemplateData struct {
 	Name  string
 	URL   string
 	Site  string
+	From  string
 	Email string
 }
 
@@ -47,8 +48,9 @@ func SendEmailVerification(domain string, apiKey string, template *TemplateData)
 		return "nil", err
 	}
 
+	//generate the new message by taking the from, subject, email, body will be empty 
 	m := mg.NewMessage(
-		"niteeshdubey@egnimos.com",
+		template.From,
 		"Verify Your Email",
 		"",
 		template.Email,
@@ -65,24 +67,16 @@ func SendEmailVerification(domain string, apiKey string, template *TemplateData)
 //SendResetPassword : send the reset password mail to the semder
 func SendResetPassword(domain string, apiKey string, template TemplateData) (string, error) {
 	mg := mailgun.NewMailgun(domain, apiKey)
-	templateData := struct {
-		Name string
-		URL  string
-		Site string
-	}{
-		Name: template.Name,
-		URL:  template.URL,
-		Site: template.Site,
-	}
 
 	//parse the template
-	msgBody, err := ParseTemplate("./reset-password.gohtml", templateData)
+	msgBody, err := ParseTemplate("./reset-password.gohtml", template)
 	if err != nil {
 		return "nil", err
 	}
 
+	//generate the new message by taking the from, subject, email, body will be empty 
 	m := mg.NewMessage(
-		"niteeshdubey@egnimos.com",
+		template.From,
 		"Reset Your Password",
 		"",
 		template.Email,
